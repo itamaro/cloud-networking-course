@@ -141,7 +141,14 @@ class BandwidthMonitor(app_manager.RyuApp):
         # (Hint: you can look up the switch or host connected to a port using
         #  self.topo.ports[switch name][port number])
 
-        # [ ADD YOUR CODE HERE ]
+        if name in self.topo.edgeSwitches:
+            # It's an edge switch - go over the ports and look for hosts
+            for stat in body:
+                connected_to = self.topo.ports[name][stat.port_no]
+                if connected_to in self.topo.hosts:
+                    # Got a host-connected port! Report!
+                    self.bwstats.addHostBwStat(connected_to,
+                                               stat.tx_bytes, stat.rx_bytes)
 
         # periodically print tenant bandwidth usage
         self.statsReplied += 1
